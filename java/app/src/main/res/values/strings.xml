@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">KMK</string>
+    <string name="preferance_file_key">edu.koidulag.kmk.KEY</string>
+</resources>
