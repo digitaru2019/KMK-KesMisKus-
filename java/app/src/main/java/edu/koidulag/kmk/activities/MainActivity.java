@@ -24,7 +24,7 @@ import edu.koidulag.kmk.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String url = "http://192.168.203.121/kmk/04.php";
+    private String url = "http://192.168.1.188/kmk/04.php"; //Ajutine ip
     public static UUID deviceid;
 
     final String prefKey = "edu.koidulag.kmk.prefFile";
