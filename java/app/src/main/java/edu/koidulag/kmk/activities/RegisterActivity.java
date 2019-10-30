@@ -31,7 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     String s1, s2, s4;
 
-    private String url = "http://192.168.203.121/kmk/03.php";
+    private String url = "http://192.168.1.188/kmk/03.php"; //Ajutine ip
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
