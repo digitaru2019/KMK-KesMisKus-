@@ -7,18 +7,18 @@ include '02.php';
 $inputJSON = file_get_contents('php://input');
 $input = json_decode($inputJSON, TRUE);
 
-if (isset($input['uuid']))
+if (isset($input["uuid"]))
 {
-	$uuid = $input['uuid'];
+	$uuid = $input["uuid"];
 	
 	if (a($uuid))
 	{
-		$insertQuery = "SELECT f_name,l_name,c FROM users WHERE uuid = ?";
+		$insertQuery = "SELECT id,f_name,l_name,c FROM users WHERE uuid = ?";
 		if ($stmt = $con->prepare($insertQuery))
 		{
 			$stmt->bind_param("s",$uuid);
 			$stmt->execute();
-			$stmt->bind_result($f,$l,$c);
+			$stmt->bind_result($id,$f,$l,$c);
 			if ($stmt->fetch())
 			{
 				$response["status"] = 0;
@@ -26,6 +26,7 @@ if (isset($input['uuid']))
 				$response["f"] = $f;
 				$response["l"] = $l;
 				$response["c"] = $c;
+				$response["id"] = (int) $id;
 			} 
 			else
 			{
@@ -34,6 +35,35 @@ if (isset($input['uuid']))
 			}	
 		}
 		$stmt->close();
+		
+		$query = "SELECT team,role FROM teams_members WHERE user = ?";
+		if ($stmt = $con->prepare($query)) {
+			$stmt->bind_param("i",$id);
+			$stmt->execute();
+			$stmt->bind_result($tid,$role);
+			if ($stmt->fetch()) {
+				$response["teamid"] = (int) $tid;
+				$response["role"] = (int) $role;
+			} else {
+				$response["teamid"] = -1;
+			}
+		}
+		$stmt->close();
+		
+		if ($response["id"] != -1) {
+			$query = "SELECT n FROM teams WHERE id = ?";
+			if ($stmt = $con->prepare($query)) {
+				$stmt->bind_param("i",$tid);
+				$stmt->execute();
+				$stmt->bind_result($n);
+				if ($stmt->fetch()) {
+					$response["teamname"] = $n;
+				} else {
+					$response["teamname"] = "";
+				}
+			}
+			$stmt->close();
+		}
 	} 
 	else 
 	{

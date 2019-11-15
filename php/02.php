@@ -20,4 +20,23 @@ function a($uuid) {
 	return false;
 }
 
+function b() {
+	$query = "SELECT value FROM settings WHERE value=`register`";
+	global $con;
+	if ($stmt = $con->prepare($query))
+	{
+		$stmt->execute();
+		$stmt->store_result();
+		$stmt->fetch();
+		if($stmt->value == 1) 
+		{
+			$stmt->close();
+			return true;
+		}
+		$stmt->close();
+		
+	}
+	return false;
+}
+
 ?>

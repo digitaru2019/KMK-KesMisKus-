@@ -21,10 +21,13 @@ import java.util.UUID;
 import edu.koidulag.kmk.BuildConfig;
 import edu.koidulag.kmk.Queue;
 import edu.koidulag.kmk.R;
+import edu.koidulag.kmk.Role;
+import edu.koidulag.kmk.TeamData;
+import edu.koidulag.kmk.UserData;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String url = "http://192.168.203.121/kmk/04.php";
+    private String url = "http://192.168.1.188/kmk/04.php"; //Ajutine ip
     public static UUID deviceid;
 
     final String prefKey = "edu.koidulag.kmk.prefFile";
@@ -36,42 +39,61 @@ public class MainActivity extends AppCompatActivity {
 
         checkFirstRun();
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         JSONObject jr = new JSONObject();
         try {
             jr.put("uuid", deviceid.toString().trim());
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+
         JsonObjectRequest jor = new JsonObjectRequest(
                 Request.Method.POST, url, jr,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
+
+                            System.out.println(response.toString());
+
                             if (response.getInt("status") == 0) {
+
+                                UserData.i().setUuid(deviceid);
+                                UserData.i().setFirstname(response.getString("f"));
+                                UserData.i().setLastname(response.getString("l"));
+                                UserData.i().set_class(response.getString("c"));
+
+                                if (response.getInt("teamid") != -1) {
+                                    TeamData td = new TeamData(response.getInt("teamid"));
+                                    td.setTeamName(response.getString("teamname"));
+                                    UserData.i().setTeamData(td);
+                                    Role r = Role.MEMBER;
+                                    switch (response.getInt("role")) {
+                                        case 0:
+                                            r = Role.LEADER; break;
+                                        case 1:
+                                            r = Role.MEMBER; break;
+                                    }
+                                    UserData.i().setRole(r);
+                                }
+
                                 Intent i = new Intent(MainActivity.this, HomepageActivity.class);
                                 startActivity(i);
                             } else if (response.getInt("status") == 1) {
                                 Intent i = new Intent(MainActivity.this, RegisterActivity.class);
                                 startActivity(i);
                             } else {
-                                //
+                                Toast.makeText(getApplicationContext(), "Midagi läks valesti!", Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
+
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                System.out.println(error.getMessage());
                 error.printStackTrace();
             }
         });

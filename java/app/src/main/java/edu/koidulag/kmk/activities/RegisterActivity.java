@@ -21,6 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.koidulag.kmk.Queue;
 import edu.koidulag.kmk.R;
+import edu.koidulag.kmk.UserData;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -31,7 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     String s1, s2, s4;
 
-    private String url = "http://192.168.203.121/kmk/03.php";
+    private String url = "http://192.168.1.188/kmk/03.php"; //Ajutine ip
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,13 +75,20 @@ public class RegisterActivity extends AppCompatActivity {
                 try {
                     if (response.getInt("status") == 0) {
                         Toast.makeText(getApplicationContext(), "Registreeritud!", Toast.LENGTH_SHORT).show();
+
+                        UserData.i().setUuid(MainActivity.deviceid);
+                        UserData.i().setFirstname(s1);
+                        UserData.i().setLastname(s2);
+                        UserData.i().set_class(s4);
+
                         Intent i = new Intent(RegisterActivity.this, HomepageActivity.class);
                         startActivity(i);
                     } else if (response.getInt("status") == 1) {
                         Toast.makeText(getApplicationContext(), "Teie seadme UUID on juba andmebaasis olemas!", Toast.LENGTH_SHORT).show();
+                    } else if (response.getInt("status") == 3) {
+                        Toast.makeText(getApplicationContext(), "Registreerimine on lõppenud", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getApplicationContext(), "Vajalikud andmed puuduvad!", Toast.LENGTH_SHORT).show();
-                        System.out.println("Missing data");
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -90,7 +98,6 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                System.out.println(error.getMessage());
                 error.printStackTrace();
             }
         });

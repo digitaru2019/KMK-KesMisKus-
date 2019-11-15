@@ -9,6 +9,18 @@ public class UserData {
     String lastname;
     String username;
     String _class;
+    Role role;
+    TeamData teamData;
+    static UserData _i;
+
+    public UserData() {}
+
+    public static UserData i() {
+        if (_i == null) {
+            _i = new UserData();
+        }
+        return _i;
+    }
 
     public void setUuid(UUID _uuid) {
         uuid = _uuid;
@@ -48,6 +60,22 @@ public class UserData {
 
     public String get_class() {
         return _class;
+    }
+
+    public void setRole(Role _role) {
+        role = _role;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setTeamData(TeamData td) {
+        teamData = td;
+    }
+
+    public TeamData getTeamData() {
+        return  teamData;
     }
 
 }
